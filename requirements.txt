@@ -5,3 +5,5 @@ diffusers==0.17.1
 xformers==0.0.20
 transformers==4.30.2
 accelerate==0.20.3
+einops==0.7.0
+opencv_python==4.5.5.64

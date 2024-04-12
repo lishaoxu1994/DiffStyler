@@ -27,12 +27,21 @@ Compute the intermediate noisy latents of the structure guidance image.
 python preprocess.py --data_path <content_image>
 ```
 
-## Running Diffstyler
+## Running DiffStyler
 Run the following command for applying Localized Image Style Transfer:
 
 ```
 python diffstyler.py --config_path configs/config-girl1.yaml
 ```
+The corresponding masks are calculated using FastSAM(https://github.com/CASIA-IVA-Lab/FastSAM).
+
+## Demo
+We provide a demo for testing:
+
+```
+bash demo.sh
+```
+
 
 ## BibTeX
 ```

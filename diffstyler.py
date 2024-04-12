@@ -31,8 +31,7 @@ class PNP(nn.Module):
         elif sd_version == '2.0':
             model_key = "stabilityai/stable-diffusion-2-base"
         elif sd_version == '1.5':
-            #model_key = "runwayml/stable-diffusion-v1-5"
-            model_key = "/data2/lsx/stablediffusion/stable-diffusion-v1-5"
+            model_key = "runwayml/stable-diffusion-v1-5"
         else:
             raise ValueError(f'Stable-diffusion version {sd_version} not supported.')
 
@@ -184,9 +183,6 @@ class PNP(nn.Module):
         with torch.autocast(device_type='cuda', dtype=torch.float32):
             for i, t in enumerate(tqdm(self.scheduler.timesteps, desc="Sampling")):
                 x = self.denoise_step(x, t)
-                #x,x_c,x_l = self.denoise_step_all(x, t)
-                #if t < 300: break
-
             decoded_latent = self.decode_latent(x)
             T.ToPILImage()(decoded_latent[0]).save(f'{self.config["output_path"]}/output-{self.config["prompt"]}.png')
                 
@@ -205,19 +201,19 @@ class PNP(nn.Module):
         self.lora_text_embeds_list = []
         for lora_name in self.lora_name_list:
             unet_lora_temp = copy.deepcopy(self.unet)
-            load_lora_paths = './lora_models/' + lora_name + '.ckpt'
+            load_lora_paths = './lora_models/' + lora_name.strip() + '.ckpt'
             lora = torch.load(load_lora_paths, map_location="cpu")
             unet_lora_temp.load_attn_procs(lora)
-            self.init_pnp_lora(unet_lora_temp,25,25)
+            self.init_pnp_lora(unet_lora_temp,30,25)
             self.lora_list.append(unet_lora_temp)
         for mask_name in self.mask_name_list:
-            mask_path = 'mask/'+ mask_name + '.png'
+            mask_path = 'mask/'+ mask_name.strip() + '.png'
             mask = cv2.imread(mask_path)
             mask = cv2.resize(mask,[64,64])
             mask = np.array(mask, dtype = bool)[:,:,0]
             self.mask_list.append(mask)
         for prompts in self.prompt_gene_list:
-            text_embeds = self.get_text_embeds(prompts, config["negative_prompt"])
+            text_embeds = self.get_text_embeds(prompts.strip(), config["negative_prompt"])
             self.lora_text_embeds_list.append(text_embeds)
         return
 
