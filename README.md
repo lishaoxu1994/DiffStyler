@@ -31,7 +31,7 @@ python preprocess.py --data_path <content_image>
 Run the following command for applying Localized Image Style Transfer:
 
 ```
-python diffstyler.py --config_path configs/config-girl1.yaml
+python diffstyler.py --config_path <config_path>
 ```
 The corresponding masks are calculated using FastSAM(https://github.com/CASIA-IVA-Lab/FastSAM).
 

@@ -26,8 +26,7 @@ class PNP(nn.Module):
         sd_version = config["sd_version"]
 
         if sd_version == '2.1':
-            #model_key = "stabilityai/stable-diffusion-2-1-base"
-            model_key = "/data2/lsx/stablediffusion/stable-diffusion-2-1-base"
+            model_key = "stabilityai/stable-diffusion-2-1-base"
         elif sd_version == '2.0':
             model_key = "stabilityai/stable-diffusion-2-base"
         elif sd_version == '1.5':
