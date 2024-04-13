@@ -1,0 +1,26 @@
+# general
+seed: 1
+device: 'cuda'
+output_path: 'results/girl1'
+
+# data
+image_path: 'data/girl1.jpg'
+latents_path: 'latents_forward'
+
+
+# diffusion
+sd_version: '2.1'
+guidance_scale: 10.5
+n_timesteps: 50
+
+prompt: ''
+
+prompt_gene: 'painting of <sss>, girl'
+lora_name: 'lora_girl_c1'
+mask: 'girl1_face'
+
+negative_prompt: ugly, blurry, black, low res, unrealistic
+
+# pnp injection thresholds, ∈ [0, 1]
+pnp_attn_t: 0.5
+pnp_f_t: 0.8

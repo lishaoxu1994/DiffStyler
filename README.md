@@ -36,10 +36,11 @@ python diffstyler.py --config_path <config_path>
 The corresponding masks are calculated using FastSAM(https://github.com/CASIA-IVA-Lab/FastSAM).
 
 ## Demo
-We provide a demo for testing:
+We provide two demos for testing:
 
 ```
-bash demo.sh
+bash demo1.sh
+bash demo2.sh
 ```
 
 
