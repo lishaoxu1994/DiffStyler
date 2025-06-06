@@ -300,7 +300,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--image_path', type=str, default='data/girl_c1.jpg')
+    parser.add_argument('--data_path', type=str, default='data/girl_c1.jpg')
     parser.add_argument('--prompt', type=str, default='cartoon image, woman')
     parser.add_argument('--model_key', type=str, default='stabilityai/stable-diffusion-2-1-base')
     parser.add_argument('--save_lora_dir', type=str, default='lora_models')
