@@ -1,7 +1,9 @@
-# DiffStyler: Diffusion-based Localized Image Style Transfer [[Arxiv Paper](https://arxiv.org/abs/2403.18461)]
+# An Efficient and Harmonized Framework for Balanced Cross-Domain Feature Integration [AAAI 2026 (https://arxiv.org/abs/2403.18461)]
 <p float="left">
   <img src="teaser.png" width="800" />
 </p>
+
+## The existing code does not reflect the latest version and is pending systematic organization.
 
 
 ## Setup
@@ -46,13 +48,14 @@ bash demo2.sh
 
 ## BibTeX
 ```
-@misc{li2024diffstyler,
-      title={DiffStyler: Diffusion-based Localized Image Style Transfer}, 
-      author={Shaoxu Li},
-      year={2024},
+@misc{li2025efficientharmonizedframeworkbalanced,
+      title={An Efficient and Harmonized Framework for Balanced Cross-Domain Feature Integration}, 
+      author={Shaoxu Li and Ye Pan},
+      year={2025},
       eprint={2403.18461},
       archivePrefix={arXiv},
-      primaryClass={cs.CV}
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2403.18461}, 
 }
 ```
 
