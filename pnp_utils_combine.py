@@ -2,6 +2,7 @@ import torch
 import os
 import random
 import numpy as np
+import torch.nn.functional as F
 
 def seed_everything(seed):
     torch.manual_seed(seed)
@@ -37,6 +38,7 @@ def load_source_latents_t(t, latents_path):
     latents = torch.load(latents_t_path)
     return latents
 
+
 def register_attention_control_efficient(model_unet, injection_schedule):
     def sa_forward(self):
         to_out = self.to_out
@@ -51,30 +53,50 @@ def register_attention_control_efficient(model_unet, injection_schedule):
 
             is_cross = encoder_hidden_states is not None
             encoder_hidden_states = encoder_hidden_states if is_cross else x
-            #if not is_cross and self.injection_schedule is not None and (
-            if self.injection_schedule is not None and (    
+            #if 1:
+            if not is_cross and self.injection_schedule is not None and (
+            #if self.injection_schedule is not None and (    
                     self.t in self.injection_schedule or self.t == 1000):
                 q = self.to_q(x)
                 k = self.to_k(encoder_hidden_states)
-
+                v = self.to_v(encoder_hidden_states)
+                
                 source_batch_size = int(q.shape[0] // 3)
+                #rate = self.t/1000
+                rate = self.t/1000*2.0
+                if rate >1.0: rate = 1.0
+
+                test_rate = 1
                 # inject unconditional
-                q[source_batch_size:2 * source_batch_size] = q[:source_batch_size]
-                k[source_batch_size:2 * source_batch_size] = k[:source_batch_size]
-                # inject conditional
-                q[2 * source_batch_size:] = q[:source_batch_size]
-                k[2 * source_batch_size:] = k[:source_batch_size]
+                if test_rate:
+                    q[source_batch_size:2 * source_batch_size] = q[:source_batch_size]*rate +  q[source_batch_size:2 * source_batch_size]*(1-rate)
+                    k[source_batch_size:2 * source_batch_size] = k[:source_batch_size]*rate +  k[source_batch_size:2 * source_batch_size]*(1-rate)
+                    q[2 * source_batch_size:] = q[:source_batch_size]*rate + q[2 * source_batch_size:]*(1-rate)
+                    k[2 * source_batch_size:] = k[:source_batch_size]*rate + k[2 * source_batch_size:]*(1-rate)
+                else:
+                    q[source_batch_size:2 * source_batch_size] = q[:source_batch_size]  
+                    k[source_batch_size:2 * source_batch_size] = k[:source_batch_size]
+
+        
+                    #v[source_batch_size:2 * source_batch_size] = v[:source_batch_size]
+                    # inject conditional
+                    q[2 * source_batch_size:] = q[:source_batch_size]
+                    k[2 * source_batch_size:] = k[:source_batch_size]
+
+
+                    '''v[2 * source_batch_size:] = v[:source_batch_size]'''
 
                 q = self.head_to_batch_dim(q)
                 k = self.head_to_batch_dim(k)
+                v = self.head_to_batch_dim(v)
             else:
                 q = self.to_q(x)
                 k = self.to_k(encoder_hidden_states)
                 q = self.head_to_batch_dim(q)
                 k = self.head_to_batch_dim(k)
 
-            v = self.to_v(encoder_hidden_states)
-            v = self.head_to_batch_dim(v)
+                v = self.to_v(encoder_hidden_states)
+                v = self.head_to_batch_dim(v)
 
             sim = torch.einsum("b i d, b j d -> b i j", q, k) * self.scale
 
@@ -94,14 +116,18 @@ def register_attention_control_efficient(model_unet, injection_schedule):
         return forward
 
     res_dict = {1: [1, 2], 2: [0, 1, 2], 3: [0, 1, 2]}  # we are injecting attention in blocks 4 - 11 of the decoder, so not in the first block of the lowest resolution
+    res_dict = {1: [1, 2], 2: [0, 1, 2], 3: [0, 1, 2]}
     for res in res_dict:
         for block in res_dict[res]:
             module = model_unet.up_blocks[res].attentions[block].transformer_blocks[0].attn1
             module.forward = sa_forward(module)
             setattr(module, 'injection_schedule', injection_schedule)
+    '''res_dict = {1: [1]}        
+    for res in res_dict:
+        for block in res_dict[res]:
             module = model_unet.up_blocks[res].attentions[block].transformer_blocks[0].attn2
             module.forward = sa_forward(module)
-            setattr(module, 'injection_schedule', injection_schedule)
+            setattr(module, 'injection_schedule', injection_schedule)'''
 
 def register_conv_control_efficient(model_unet, injection_schedule):
     def conv_forward(self):
