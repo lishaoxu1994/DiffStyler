@@ -173,8 +173,6 @@ class PNP(nn.Module):
     def run_pnp(self):
         pnp_f_t = int(self.config["n_timesteps"] * self.config["pnp_f_t"])
         pnp_attn_t = int(self.config["n_timesteps"] * self.config["pnp_attn_t"])
-        pnp_f_t = 50
-        pnp_attn_t = 50
         self.init_pnp(conv_injection_t=pnp_f_t, qk_injection_t=pnp_attn_t)
         edited_img = self.sample_loop(self.eps)
 
